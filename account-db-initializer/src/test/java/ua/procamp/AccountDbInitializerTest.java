@@ -33,7 +33,8 @@ public class AccountDbInitializerTest {
         try (Connection connection = dataSource.getConnection()) {
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("SHOW TABLES");
+            ResultSet resultSet = statement.executeQuery("SHOW TABLES"
+                + "");
             resultSet.next();
             String tableName = resultSet.getString("table_name");
 
