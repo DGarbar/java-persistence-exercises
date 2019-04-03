@@ -42,6 +42,7 @@ CREATE TABLE profiles
     job_position VARCHAR(255),
     company      VARCHAR(255),
     education    VARCHAR(255),
+
     CONSTRAINT profiles_users_FK FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT profiles_PK PRIMARY KEY (user_id)
 );
