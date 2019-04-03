@@ -42,9 +42,7 @@ CREATE TABLE sales_group
 (
     id                     BIGINT       NOT NULL,
     name                   VARCHAR(255) NOT NULL,
---     TODO STRING ASK
     transaction_type       VARCHAR(255) NOT NULL,
---     TODO STRING ASK
     max_transaction_amount NUMERIC      NOT NULL,
 
     CONSTRAINT PK_sales_group PRIMARY KEY (id),
@@ -53,10 +51,10 @@ CREATE TABLE sales_group
 
 CREATE TABLE broker_sales_group
 (
-    broker_id     BIGINT NOT NULL,
+    broker_id      BIGINT NOT NULL,
     sales_group_id BIGINT NOT NULL,
 
     CONSTRAINT FK_broker_sales_group_broker FOREIGN KEY (broker_id) REFERENCES broker,
     CONSTRAINT FK_broker_sales_group_sales_group FOREIGN KEY (sales_group_id) REFERENCES sales_group,
-    CONSTRAINT PK_broker_sales_group PRIMARY KEY (broker_id,sales_group_id)
+    CONSTRAINT PK_broker_sales_group PRIMARY KEY (broker_id, sales_group_id)
 );

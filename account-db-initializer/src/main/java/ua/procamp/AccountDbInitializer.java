@@ -1,6 +1,5 @@
 package ua.procamp;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
@@ -30,23 +29,20 @@ public class AccountDbInitializer {
    * primary key is an {@code id}, and corresponding constraint is named {@code "account_pk"}. An
    * unique constraint that is created for {@code email column} is called "account_email_uq"
    */
+  private static final String INIT_SQL = "CREATE TABLE account("
+      + "id BIGINT NOT NULL,"
+      + "email VARCHAR(255) NOT NULL,"
+      + "first_name VARCHAR(255) NOT NULL,"
+      + "last_name VARCHAR(255) NOT NULL,"
+      + "gender VARCHAR(255) NOT NULL,"
+      + "birthday DATE NOT NULL,"
+      + "balance DECIMAL (19,4),"
+      + "creation_time TIMESTAMP NOT NULL DEFAULT now(),"
+      + "CONSTRAINT account_pk PRIMARY KEY (id),"
+      + "CONSTRAINT account_email_uq UNIQUE (email))";
   public void init() throws SQLException {
-    try (Connection connection = dataSource.getConnection()) {
-      Statement statement = connection.createStatement();
-      String sql = "CREATE TABLE account("
-          + "id BIGINT NOT NULL,"
-          + "email VARCHAR(255) NOT NULL,"
-          + "first_name VARCHAR(255) NOT NULL,"
-          + "last_name VARCHAR(255) NOT NULL,"
-          + "gender VARCHAR(255) NOT NULL,"
-          + "birthday DATE NOT NULL,"
-          + "balance DECIMAL (19,4),"
-          + "creation_time TIMESTAMP NOT NULL DEFAULT now(),"
-          + "CONSTRAINT account_pk PRIMARY KEY (id),"
-          + "CONSTRAINT account_email_uq UNIQUE (email))";
-      boolean execute = statement.execute(sql);
-
+    try (Statement statement = dataSource.getConnection().createStatement()) {
+      statement.execute(INIT_SQL);
     }
-
   }
 }
