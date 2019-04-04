@@ -52,7 +52,7 @@ public class ProductDaoImpl implements ProductDao {
         }
       }
     } catch (SQLException e) {
-      throw new DaoOperationException("Error saving product: " + product);
+      throw new DaoOperationException("Error saving product: " + product, e);
     }
   }
 
@@ -66,7 +66,7 @@ public class ProductDaoImpl implements ProductDao {
         products.add(product);
       }
     } catch (SQLException e) {
-      throw new DaoOperationException("Error findAll products");
+      throw new DaoOperationException("Error findAll products", e);
     }
     return products;
   }
@@ -89,7 +89,7 @@ public class ProductDaoImpl implements ProductDao {
         throw new DaoOperationException(String.format("Product with id = %s does not exist", id));
       }
     } catch (SQLException e) {
-      throw new DaoOperationException(String.format("Product with id = %s does not exist", id));
+      throw new DaoOperationException(String.format("Product with id = %s does not exist", id), e);
     }
     return product;
   }
@@ -108,7 +108,7 @@ public class ProductDaoImpl implements ProductDao {
         throw new DaoOperationException("Nothing was updated");
       }
     } catch (SQLException e) {
-      throw new DaoOperationException(String.format("Product id cannot be %s", id));
+      throw new DaoOperationException(String.format("Product id cannot be %s", id), e);
     }
   }
 
@@ -127,17 +127,17 @@ public class ProductDaoImpl implements ProductDao {
       }
     } catch (SQLException e) {
       throw new DaoOperationException(
-          String.format("Product with id = %s does not exist", id));
+          String.format("Product with id = %s does not exist", id), e);
     }
   }
 
   //Mb change to Custom ViolationIdException
   private void verifyId(Long id) throws DaoOperationException {
-    if(id == null){
+    if (id == null) {
       throw new DaoOperationException("Product id cannot be null");
     }
     if (id <= 0) {
-      throw new DaoOperationException(String.format("Product with id = %s does not exist",id));
+      throw new DaoOperationException(String.format("Product with id = %s does not exist", id));
     }
   }
 }
