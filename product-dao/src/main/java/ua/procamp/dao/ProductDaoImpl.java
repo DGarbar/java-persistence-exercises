@@ -1,11 +1,13 @@
 package ua.procamp.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.sql.DataSource;
 import ua.procamp.dao.Mappers.ProductMapper;
 import ua.procamp.exception.DaoOperationException;
@@ -17,12 +19,8 @@ public class ProductDaoImpl implements ProductDao {
   private ProductMapper productMapper;
   private static final String SAVE_SQL = "INSERT INTO products(name,producer,price,expiration_date) VALUES(?,?,?,?);";
   private static final String FIND_ALL_SQL = "SELECT * FROM products";
-
-  //Do I need compare all object? Or just use id ?
   private static final String FIND_BY_ID_SQL = "SELECT * FROM products WHERE id = ?;";
   private static final String REMOVE_SQL = "DELETE FROM products WHERE id = ?;";
-
-  //MB we can do better. We need remember if we change one column;
   private static final String UPDATE_SQL =
       "UPDATE products SET "
           + " name = ?,"
@@ -39,27 +37,33 @@ public class ProductDaoImpl implements ProductDao {
 
   @Override
   public void save(Product product) {
-    try (PreparedStatement statement = dataSource.getConnection()
-        .prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement statement = connection
+          .prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
       productMapper.fulfillStatementWithoutCreationTime(statement, product);
       statement.executeUpdate();
-
-      try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-        if (generatedKeys.next()) {
-          product.setId(generatedKeys.getLong(1));
-        } else {
-          throw new DaoOperationException("Error saving product: " + product);
-        }
-      }
+      Long id = getGeneratedId(statement)
+          .orElseThrow(() -> new DaoOperationException("Nothing was saved product= " + product));
+      product.setId(id);
     } catch (SQLException e) {
       throw new DaoOperationException("Error saving product: " + product, e);
+    }
+  }
+
+  private Optional<Long> getGeneratedId(Statement statement) throws SQLException {
+    ResultSet generatedKeys = statement.getGeneratedKeys();
+    if (generatedKeys.next()) {
+      return Optional.of(generatedKeys.getLong(1));
+    } else {
+      return Optional.empty();
     }
   }
 
   @Override
   public List<Product> findAll() {
     ArrayList<Product> products = new ArrayList<>();
-    try (Statement statement = dataSource.getConnection().createStatement()) {
+    try (Connection connection = dataSource.getConnection()) {
+      Statement statement = connection.createStatement();
       ResultSet resultSet = statement.executeQuery(FIND_ALL_SQL);
       while (resultSet.next()) {
         Product product = productMapper.getProduct(resultSet);
@@ -71,42 +75,38 @@ public class ProductDaoImpl implements ProductDao {
     return products;
   }
 
-  //Optional ???
   @Override
   public Product findOne(Long id) {
     verifyId(id);
-    Product product;
-    try (PreparedStatement statement = dataSource.getConnection()
-        .prepareStatement(FIND_BY_ID_SQL)) {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement statement = connection.prepareStatement(FIND_BY_ID_SQL);
       statement.setLong(1, id);
       ResultSet resultSet = statement.executeQuery();
-
-      //Or we can just check on null after mapping
-      if (resultSet.next()) {
-        product = productMapper.getProduct(resultSet);
-      } else {
-        //Mb need more specific Exception
-        throw new DaoOperationException(String.format("Product with id = %s does not exist", id));
-      }
+      return getProduct(resultSet)
+          .orElseThrow(() -> new DaoOperationException(
+              String.format("Product with id = %s does not exist", id)));
     } catch (SQLException e) {
-      throw new DaoOperationException(String.format("Product with id = %s does not exist", id), e);
+      throw new DaoOperationException(String.format("Error finding one with id = %d", id), e);
     }
-    return product;
+  }
+
+  private Optional<Product> getProduct(ResultSet resultSet) throws SQLException {
+    if (resultSet.next()) {
+      return Optional.of(productMapper.getProduct(resultSet));
+    } else {
+      return Optional.empty();
+    }
   }
 
   @Override
   public void update(Product product) {
     Long id = product.getId();
     verifyId(id);
-    try (PreparedStatement statement = dataSource.getConnection()
-        .prepareStatement(UPDATE_SQL)) {
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement statement = connection.prepareStatement(UPDATE_SQL);
       productMapper.fulfillStatementWithoutCreationTime(statement, product);
-      // Need remember number of fields
       statement.setLong(5, id);
-      int numberOfUpdated = statement.executeUpdate();
-      if (numberOfUpdated != 1) {
-        throw new DaoOperationException("Nothing was updated");
-      }
+      executeUpdate(statement);
     } catch (SQLException e) {
       throw new DaoOperationException(String.format("Product id cannot be %s", id), e);
     }
@@ -117,21 +117,24 @@ public class ProductDaoImpl implements ProductDao {
   public void remove(Product product) {
     Long id = product.getId();
     verifyId(id);
-    try (PreparedStatement statement = dataSource.getConnection()
-        .prepareStatement(REMOVE_SQL)) {
-      // Need remember number of fields
+    try (Connection connection = dataSource.getConnection()) {
+      PreparedStatement statement = connection.prepareStatement(REMOVE_SQL);
       statement.setLong(1, id);
-      int numberOfUpdated = statement.executeUpdate();
-      if (numberOfUpdated != 1) {
-        throw new DaoOperationException(String.format("Product id cannot be %s", id));
-      }
+      executeUpdate(statement);
     } catch (SQLException e) {
       throw new DaoOperationException(
           String.format("Product with id = %s does not exist", id), e);
     }
   }
 
-  //Mb change to Custom ViolationIdException
+  //Smelly code
+  private void executeUpdate(PreparedStatement statement) throws SQLException {
+    int numberOfUpdated = statement.executeUpdate();
+    if (numberOfUpdated != 1) {
+      throw new DaoOperationException("Nothing was updated");
+    }
+  }
+
   private void verifyId(Long id) throws DaoOperationException {
     if (id == null) {
       throw new DaoOperationException("Product id cannot be null");
