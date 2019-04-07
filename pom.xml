@@ -31,6 +31,7 @@
         <module>jpa-hibernate-exercises-util</module>
         <module>photo-comment-dao</module>
         <module>query-helper</module>
+      <module>lock-examples</module>
     </modules>
 
     <dependencies>
