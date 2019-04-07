@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.sql.DataSource;
-import ua.procamp.util.JdbcUtil;
 
 public class OptimisticLocking {
 
@@ -17,12 +16,12 @@ public class OptimisticLocking {
         throws SQLException {
 
         try (Connection connection = dataSource.getConnection()) {
-            PreparedStatement preparedStatement = prepareOptimisticStatement(connection, sqlUpdate,
+            PreparedStatement prStmt = prepareOptimisticStatement(connection, sqlUpdate,
                 programId);
-            int i1 = ThreadLocalRandom.current().nextInt(1, 10000);
-            preparedStatement.setLong(1, i1);
-            preparedStatement.setLong(2, programId);
-            int i = preparedStatement.executeUpdate();
+            int rand = ThreadLocalRandom.current().nextInt(1, 10000);
+            prStmt.setLong(1, rand);
+            prStmt.setLong(2, programId);
+            int i = prStmt.executeUpdate();
             if (i != 1) {
                 throw new SQLException("Nothing was changed, Ver is not consistent");
             }
@@ -45,13 +44,14 @@ public class OptimisticLocking {
     }
 
     private Long getVerById(Connection connection, Long id) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectVerByID);
-        preparedStatement.setLong(1, id);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            return resultSet.getLong(1);
-        } else {
-            throw new SQLException("Version not exist");
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlSelectVerByID)) {
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            } else {
+                throw new SQLException("Version not exist");
+            }
         }
     }
 
