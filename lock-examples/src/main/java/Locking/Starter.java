@@ -10,7 +10,8 @@ public class Starter {
         DataSource dataSource = JdbcUtil
             .createPostgresDataSource("jdbc:postgresql://localhost:5432/ProCamp", "root", "root");
         Long programId = 2L;
-
+//        optimisticStart(dataSource,1L);
+        pessimisticStart(dataSource,2L);
     }
 
     private static void optimisticStart(DataSource dataSource, Long id) {
@@ -22,6 +23,12 @@ public class Starter {
         }
     }
 
-    private static void pessimistic(DataSource dataSource, Long id) {
+    private static void pessimisticStart(DataSource dataSource, Long id) {
+        PessimistickLocking optimisticLocking = new PessimistickLocking();
+        try {
+            optimisticLocking.handleProgramUpdateWithPessimisticLocking(dataSource, id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

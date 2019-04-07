@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 public class OptimisticLocking {
 
     public static final String sqlUpdate = "UPDATE programs SET description = ? WHERE id = ?;";
-    public static final String sqlSelectVerByID = "UPDATE programs SET description = ? WHERE id = ?;";
+    public static final String sqlSelectVerByID = "SELECT ver FROM programs WHERE id = ?";
 
     public void handleProgramUpdateWithOptimisticLocking(DataSource dataSource, Long programId)
         throws SQLException {
@@ -39,7 +39,7 @@ public class OptimisticLocking {
             .count();
         PreparedStatement preparedStatement = connection.prepareStatement(optimisticSqlUpdate);
         preparedStatement.setLong(numberOdParameters, verById);
-        //"UPDATE programs SET description = ? , ver = ver+1 WHERE id = ? AND ver = ? ;"
+        //"UPDATE programs SET description = ?, ver = ver+1 WHERE id = ? AND ver = ?;"
         return preparedStatement;
     }
 
@@ -60,9 +60,9 @@ public class OptimisticLocking {
         int whereIndex = update.indexOf("WHERE");
         return stringBuilder
             .append(update, 0, whereIndex)
-            .append(", ver = ver + 1")
+            .append(", ver = ver + 1 WHERE")
             .append(update, whereIndex + 5, update.indexOf(";"))
-            .append("AND ver = ?;")
+            .append(" AND ver = ?;")
             .toString();
     }
 }
