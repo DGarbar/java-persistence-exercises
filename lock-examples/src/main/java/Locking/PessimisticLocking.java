@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 
 public class PessimisticLocking {
 
+    public static final String sqlSelect = "Select description From programs Where id = ? For update;";
     public static final String sqlUpdate = "UPDATE programs SET description = ? WHERE id = ?;";
 
     public void handleProgramUpdateWithPessimisticLocking(DataSource dataSource, Long programId)
@@ -15,6 +16,9 @@ public class PessimisticLocking {
 
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlSelect);
+            preparedStatement.setLong(1, programId);
+            preparedStatement.execute();
             PreparedStatement prStmt = connection.prepareStatement(sqlUpdate);
             int rand = ThreadLocalRandom.current().nextInt(1, 10000);
             prStmt.setLong(1, rand);
