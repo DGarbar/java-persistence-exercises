@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.sql.DataSource;
 
-public class PessimistickLocking {
+public class PessimisticLocking {
 
     public static final String sqlUpdate = "UPDATE programs SET description = ? WHERE id = ?;";
 

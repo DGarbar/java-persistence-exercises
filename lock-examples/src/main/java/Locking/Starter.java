@@ -24,7 +24,7 @@ public class Starter {
     }
 
     private static void pessimisticStart(DataSource dataSource, Long id) {
-        PessimistickLocking optimisticLocking = new PessimistickLocking();
+        PessimisticLocking optimisticLocking = new PessimisticLocking();
         try {
             optimisticLocking.handleProgramUpdateWithPessimisticLocking(dataSource, id);
         } catch (SQLException e) {
