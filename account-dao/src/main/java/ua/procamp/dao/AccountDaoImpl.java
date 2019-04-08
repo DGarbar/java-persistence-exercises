@@ -1,11 +1,12 @@
 package ua.procamp.dao;
 
+import java.util.List;
+import javax.persistence.*;
+import ua.procamp.exception.AccountDaoException;
 import ua.procamp.model.Account;
 
-import javax.persistence.EntityManagerFactory;
-import java.util.List;
-
 public class AccountDaoImpl implements AccountDao {
+
     private EntityManagerFactory emf;
 
     public AccountDaoImpl(EntityManagerFactory emf) {
@@ -14,32 +15,92 @@ public class AccountDaoImpl implements AccountDao {
 
     @Override
     public void save(Account account) {
-        throw new UnsupportedOperationException("I don't wanna work without implementation!"); // todo
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.persist(account);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new AccountDaoException("Save error", e);
+        } finally {
+            entityManager.close();
+        }
+
     }
 
     @Override
     public Account findById(Long id) {
-        throw new UnsupportedOperationException("I don't wanna work without implementation!"); // todo
+        EntityManager entityManager = emf.createEntityManager();
+        Account account;
+        try {
+            account = entityManager.find(Account.class, id);
+        } finally {
+            entityManager.close();
+        }
+        return account;
     }
 
     @Override
     public Account findByEmail(String email) {
-        throw new UnsupportedOperationException("I don't wanna work without implementation!"); // todo
+        EntityManager entityManager = emf.createEntityManager();
+        Account account;
+        try {
+            account = (Account) entityManager
+                .createQuery("select a from Account a where email = :email")
+                .setParameter("email", email)
+                .getSingleResult();
+        } finally {
+            entityManager.close();
+        }
+        return account;
     }
 
     @Override
     public List<Account> findAll() {
-        throw new UnsupportedOperationException("I don't wanna work without implementation!"); // todo
+        EntityManager entityManager = emf.createEntityManager();
+        List<Account> accounts;
+        try {
+            accounts = (List<Account>) entityManager.createQuery("select a from Account a")
+                .getResultList();
+        } finally {
+            entityManager.close();
+        }
+        return accounts;
     }
 
     @Override
     public void update(Account account) {
-        throw new UnsupportedOperationException("I don't wanna work without implementation!"); // todo
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.merge(account);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new AccountDaoException("Update error", e);
+        } finally {
+            entityManager.close();
+        }
     }
 
     @Override
     public void remove(Account account) {
-        throw new UnsupportedOperationException("I don't wanna work without implementation!"); // todo
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            Account merge = entityManager.merge(account);
+            entityManager.remove(merge);
+            transaction.commit();
+        } catch (Exception e) {
+            transaction.rollback();
+            throw new AccountDaoException("Remove error", e);
+        }finally {
+            entityManager.close();
+        }
     }
 }
 
