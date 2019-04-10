@@ -1,9 +1,13 @@
 package ua.procamp.model;
 
-import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * todo:
@@ -23,18 +27,31 @@ import java.util.List;
  * - configure one to many relationship as mapped on the child side
  */
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Getter
 @Setter
+@Entity
+@Table(name = "company")
 public class Company {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Setter(AccessLevel.PRIVATE)
+    @OneToMany(mappedBy = "company")
     private List<Product> products = new ArrayList<>();
 
     public void addProduct(Product product) {
-        throw new UnsupportedOperationException("I'm still not implemented!");
+        products.add(product);
+        product.setCompany(this);
     }
 
     public void removeProduct(Product product) {
-        throw new UnsupportedOperationException("I'm still not implemented!");
+        products.remove(product);
+        product.setCompany(null);
     }
 }

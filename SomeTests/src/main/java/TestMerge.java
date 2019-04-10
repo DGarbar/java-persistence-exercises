@@ -14,12 +14,11 @@ public class TestMerge {
                 return account;
             }
         );
-//
-//        emUtil.performWithinTx(entityManager -> {
-//                entityManager.
-//                entityManager.merge(accountDetached);
-//            }
-//        );
+
+        emUtil.performWithinTx(entityManager -> {
+                entityManager.merge(accountDetached);
+            }
+        );
 
         emFactory.close();
     }
