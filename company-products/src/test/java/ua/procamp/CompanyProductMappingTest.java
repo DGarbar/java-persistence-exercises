@@ -22,6 +22,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class CompanyProductMappingTest {
@@ -221,6 +222,16 @@ public class CompanyProductMappingTest {
         Company foundCompany = companyDao.findByIdFetchProducts(company.getId());
         assertThat(foundCompany, equalTo(company));
         assertThat(foundCompany.getProducts(), hasItem(product));
+    }
+
+    @Test
+    public void testFindByIdFetchesProductsWithNoProducts() {
+        var company = createRandomCompany();
+        emUtil.performWithinTx(entityManager -> entityManager.persist(company));
+
+        Company foundCompany = companyDao.findByIdFetchProducts(company.getId());
+        assertThat(foundCompany, equalTo(company));
+        assertThat(foundCompany.getProducts(), hasSize(0));
     }
 
     @Test
