@@ -32,6 +32,7 @@
         <module>photo-comment-dao</module>
         <module>query-helper</module>
       <module>lock-examples</module>
+      <module>SomeTests</module>
     </modules>
 
     <dependencies>

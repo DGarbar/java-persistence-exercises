@@ -40,4 +40,7 @@ public class Account {
 
     @Column(name = "balance")
     private BigDecimal balance = BigDecimal.ZERO.setScale(2);
+
+    @OneToOne(mappedBy = "holder")
+    private Cart cart;
 }
