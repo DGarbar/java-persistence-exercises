@@ -29,7 +29,7 @@ public interface PhotoDao {
      *
      * @return list of stored photos
      */
-    List<Photo> findAll();
+    List findAll();
 
     /**
      * Removes a photo from the database
