@@ -25,7 +25,7 @@ public class Account {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "birthday", nullable = false)
@@ -40,7 +40,4 @@ public class Account {
 
     @Column(name = "balance")
     private BigDecimal balance = BigDecimal.ZERO.setScale(2);
-
-    @OneToOne(mappedBy = "holder")
-    private Card card;
 }
