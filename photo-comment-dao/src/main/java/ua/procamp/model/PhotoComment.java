@@ -1,5 +1,6 @@
 package ua.procamp.model;
 
+import java.util.Objects;
 import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -25,7 +26,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"id"})
 @Entity
 @Table(name = "photo_comment")
 public class PhotoComment {
@@ -40,4 +40,21 @@ public class PhotoComment {
     @ManyToOne(optional = false)
     @JoinColumn(name = "photo_id")
     private Photo photo;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PhotoComment)) {
+            return false;
+        }
+        PhotoComment that = (PhotoComment) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

@@ -2,6 +2,7 @@ package ua.procamp.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -27,7 +28,6 @@ import lombok.Setter;
  * - configure one to many relationship as mapped on the child side
  */
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
 @Getter
 @Setter
 @Entity
@@ -53,5 +53,22 @@ public class Company {
     public void removeProduct(Product product) {
         products.remove(product);
         product.setCompany(null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Company)) {
+            return false;
+        }
+        Company company = (Company) o;
+        return Objects.equals(id, company.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
     }
 }

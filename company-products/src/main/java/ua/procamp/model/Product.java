@@ -1,5 +1,6 @@
 package ua.procamp.model;
 
+import java.util.Objects;
 import javax.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -34,4 +35,21 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Product)) {
+            return false;
+        }
+        Product product = (Product) o;
+        return Objects.equals(id, product.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
 }

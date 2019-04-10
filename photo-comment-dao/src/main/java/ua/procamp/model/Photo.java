@@ -1,6 +1,7 @@
 package ua.procamp.model;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import javax.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -31,7 +32,6 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "photo")
 public class Photo {
@@ -55,5 +55,22 @@ public class Photo {
     public void removeComment(PhotoComment comment) {
         comment.setPhoto(null);
         comments.remove(comment);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Photo)) {
+            return false;
+        }
+        Photo photo = (Photo) o;
+        return Objects.equals(id, photo.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
     }
 }
