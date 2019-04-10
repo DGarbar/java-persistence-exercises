@@ -12,11 +12,14 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
-@Table(name = "cart")
-public class Cart {
+@Table(name = "card")
+public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String name;
+
 
     @OneToOne(optional = false)
     @JoinColumn(name = "account_id")

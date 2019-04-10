@@ -3,7 +3,7 @@
 
     <persistence-unit name="Account">
         <class>ua.procamp.model.Account</class>
-        <class>ua.procamp.model.Cart</class>
+        <class>ua.procamp.model.Card</class>
 
         <properties>
             <property name="hibernate.connection.url" value="jdbc:h2:mem:movie_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false"/>
