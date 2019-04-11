@@ -53,7 +53,7 @@ public class PhotoDaoImpl implements PhotoDao {
     @Override
     public void addComment(long photoId, String commentString) {
         performInTransaction(entityManager -> {
-            Photo photo = entityManager.find(Photo.class, photoId);
+            Photo photo = entityManager.getReference(Photo.class, photoId);
             PhotoComment photoComment = new PhotoComment();
             photoComment.setText(commentString);
             photo.addComment(photoComment);
