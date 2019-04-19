@@ -1,11 +1,11 @@
 package ua.procamp.util;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import javax.persistence.*;
 
 public class EntityManagerUtil {
+
     private EntityManagerFactory entityManagerFactory;
 
     public EntityManagerUtil(EntityManagerFactory entityManagerFactory) {
@@ -14,12 +14,13 @@ public class EntityManagerUtil {
 
     public void performWithinTx(Consumer<EntityManager> entityManagerConsumer) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
-        entityManager.getTransaction().begin();
+        EntityTransaction transaction = entityManager.getTransaction();
         try {
+            transaction.begin();
             entityManagerConsumer.accept(entityManager);
-            entityManager.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
-            entityManager.getTransaction().rollback();
+            transaction.rollback();
             throw e;
         } finally {
             entityManager.close();
