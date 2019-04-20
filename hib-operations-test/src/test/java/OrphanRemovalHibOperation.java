@@ -81,7 +81,7 @@ public class OrphanRemovalHibOperation {
             entityManager.persist(captain);
         });
         util.performWithinTx(entityManager -> {
-            Captain captain = entityManager.find(Captain.class, 2L);
+//            Captain captain = entityManager.find(Captain.class, 2L);
             Command command = entityManager.find(Command.class, 1L);
             command.setCaptains(null);
         });

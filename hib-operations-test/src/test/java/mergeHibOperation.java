@@ -68,4 +68,26 @@ public class mergeHibOperation {
 
         });
     }
+
+    @Test
+    void stateWhenJPQL() {
+        util.performWithinTx(entityManager ->
+        {
+            Account account = new Account();
+            account.setName("asd");
+            entityManager.persist(account);
+        });
+
+        util.performWithinTx(entityManager ->
+        {
+            Account account = entityManager.find(Account.class, 1L);
+
+            Account id = entityManager
+                .createQuery("select a from Account a where a.id = :id", Account.class)
+                .setParameter("id", 1L)
+                .getSingleResult();
+
+            ;
+        });
+    }
 }
